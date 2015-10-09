@@ -15,8 +15,8 @@ func TestWritingToUDP(t *testing.T) {
 	hook, err := NewPapertrailHook(&Hook{
 		Host:     "localhost",
 		Port:     port,
-		HostName: "test.local",
-		AppName:  "test",
+		Hostname: "test.local",
+		Appname:  "test",
 	})
 	if err != nil {
 		t.Errorf("Unable to connect to local UDP server.")

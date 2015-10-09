@@ -14,27 +14,34 @@ const (
 )
 
 // PapertrailHook to send logs to a logging service compatible with the Papertrail API.
-type PapertrailHook struct {
-	Host    string
-	Port    int
-	AppName string
-	UDPConn net.Conn
+type Hook struct {
+	// Connection Details
+	Host string
+	Port int
+
+	// App Details
+	AppName  string
+	HostName string
+
+	udpConn net.Conn
 }
 
 // NewPapertrailHook creates a hook to be added to an instance of logger.
-func NewPapertrailHook(host string, port int, appName string) (*PapertrailHook, error) {
-	conn, err := net.Dial("udp", fmt.Sprintf("%s:%d", host, port))
-	return &PapertrailHook{host, port, appName, conn}, err
+func NewPapertrailHook(hook *Hook) (*Hook, error) {
+	var err error
+
+	hook.udpConn, err = net.Dial("udp", fmt.Sprintf("%s:%d", hook.Host, hook.Port))
+	return hook, err
 }
 
 // Fire is called when a log event is fired.
-func (hook *PapertrailHook) Fire(entry *logrus.Entry) error {
+func (hook *Hook) Fire(entry *logrus.Entry) error {
 	date := time.Now().Format(format)
 	msg, _ := entry.String()
-	payload := fmt.Sprintf("<22> %s %s: %s", date, hook.AppName, msg)
+	payload := fmt.Sprintf("<22> %s %s %s: %s", date, hook.HostName, hook.AppName, msg)
 	fmt.Fprintf(os.Stdout, "PAPERTRAIL: %s\n", payload)
 
-	bytesWritten, err := hook.UDPConn.Write([]byte(payload))
+	bytesWritten, err := hook.udpConn.Write([]byte(payload))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to send log line to Papertrail via UDP. Wrote %d bytes before error: %v", bytesWritten, err)
 		return err
@@ -44,7 +51,7 @@ func (hook *PapertrailHook) Fire(entry *logrus.Entry) error {
 }
 
 // Levels returns the available logging levels.
-func (hook *PapertrailHook) Levels() []logrus.Level {
+func (hook *Hook) Levels() []logrus.Level {
 	return []logrus.Level{
 		logrus.PanicLevel,
 		logrus.FatalLevel,

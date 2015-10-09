@@ -26,3 +26,9 @@ func main() {
   }
 }
 ```
+
+## Changelog
+- [gopkg.in/polds/logrus-papertrail-hook.v1](https://godoc.org/gopkg.in/polds/logrus-papertrail-hook.v1)
+    - Unchanged from split from [logrus](https://github.com/Sirupsen/logrus)
+- [gopkg.in/polds/logrus-papertrail-hook.v2](https://godoc.org/gopkg.in/polds/logrus-papertrail-hook.v2)
+    - Adds support for custom hostnames. Major API change.

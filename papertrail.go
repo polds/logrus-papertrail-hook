@@ -20,8 +20,8 @@ type Hook struct {
 	Port int
 
 	// App Details
-	AppName  string
-	HostName string
+	Appname  string
+	Hostname string
 
 	udpConn net.Conn
 }
@@ -38,7 +38,7 @@ func NewPapertrailHook(hook *Hook) (*Hook, error) {
 func (hook *Hook) Fire(entry *logrus.Entry) error {
 	date := time.Now().Format(format)
 	msg, _ := entry.String()
-	payload := fmt.Sprintf("<22> %s %s %s: %s", date, hook.HostName, hook.AppName, msg)
+	payload := fmt.Sprintf("<22> %s %s %s: %s", date, hook.Hostname, hook.Appname, msg)
 	fmt.Fprintf(os.Stdout, "PAPERTRAIL: %s\n", payload)
 
 	bytesWritten, err := hook.udpConn.Write([]byte(payload))

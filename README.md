@@ -19,7 +19,12 @@ import (
 
 func main() {
   log       := logrus.New()
-  hook, err := logrus_papertrail.NewPapertrailHook(&logrus_papertrail.Hook{"logs.papertrailapp.com", YOUR_PAPERTRAIL_UDP_PORT, YOUR_HOST_NAME, YOUR_APP_NAME})
+  hook, err := logrus_papertrail.NewPapertrailHook(&logrus_papertrail.Hook{
+    Host: "logs.papertrailapp.com",
+    Port: YOUR_PAPERTRAIL_UDP_PORT,
+    Hostname: YOUR_HOST_NAME,
+    Appname: YOUR_APP_NAME
+  })
 
   if err == nil {
     log.Hooks.Add(hook)

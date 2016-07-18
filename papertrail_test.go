@@ -43,11 +43,30 @@ func TestReal(t *testing.T) {
 		Appname:  "myapp",
 	})
 	if err != nil {
-		t.Errorf("Unable to connect to Papertrail")
+		t.Errorf("Unable to connect to Papertrail via UDP")
 	}
 
 	log := logrus.New()
 	log.Hooks.Add(hook)
 
-	log.Infoln("testing")
+	log.Infoln("testing UDP")
+}
+
+func TestRealTCP(t *testing.T) {
+	port, _ := strconv.Atoi(os.Getenv("PAPERTRAIL_PORT"))
+
+	hook, err := logrus_papertrail.NewPapertrailTCPHook(&logrus_papertrail.Hook{
+		Host:     os.Getenv("PAPERTRAIL_HOST"),
+		Port:     port,
+		Hostname: "appserver",
+		Appname:  "myapp",
+	})
+	if err != nil {
+		t.Errorf("Unable to connect to Papertrail via TCP")
+	}
+
+	log := logrus.New()
+	log.Hooks.Add(hook)
+
+	log.Infoln("testing TCP")
 }

@@ -1,6 +1,7 @@
 package logrus_papertrail
 
 import (
+	"crypto/tls"
 	"fmt"
 	"net"
 	"os"
@@ -23,14 +24,22 @@ type Hook struct {
 	Appname  string
 	Hostname string
 
-	udpConn net.Conn
+	conn net.Conn
 }
 
-// NewPapertrailHook creates a hook to be added to an instance of logger.
+// NewPapertrailHook creates a UDP hook to be added to an instance of logger.
 func NewPapertrailHook(hook *Hook) (*Hook, error) {
 	var err error
 
-	hook.udpConn, err = net.Dial("udp", fmt.Sprintf("%s:%d", hook.Host, hook.Port))
+	hook.conn, err = net.Dial("udp", fmt.Sprintf("%s:%d", hook.Host, hook.Port))
+	return hook, err
+}
+
+// NewPapertrailTCPHook creates a TCP/TLS hook to be added to an instance of logger.
+func NewPapertrailTCPHook(hook *Hook) (*Hook, error) {
+	var err error
+
+	hook.conn, err = tls.Dial("tcp", fmt.Sprintf("%s:%d", hook.Host, hook.Port), nil)
 	return hook, err
 }
 
@@ -40,7 +49,7 @@ func (hook *Hook) Fire(entry *logrus.Entry) error {
 	msg, _ := entry.String()
 	payload := fmt.Sprintf("<22> %s %s %s: %s", date, hook.Hostname, hook.Appname, msg)
 
-	bytesWritten, err := hook.udpConn.Write([]byte(payload))
+	bytesWritten, err := hook.conn.Write([]byte(payload))
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to send log line to Papertrail via UDP. Wrote %d bytes before error: %v", bytesWritten, err)
 		return err

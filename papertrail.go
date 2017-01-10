@@ -14,6 +14,11 @@ const (
 	format = "Jan 2 15:04:05"
 )
 
+// private interface to make tests with TCP conn
+type conn_int interface {
+	Write([]byte) (int, error)
+}
+
 // PapertrailHook to send logs to a logging service compatible with the Papertrail API.
 type Hook struct {
 	// Connection Details
@@ -24,7 +29,7 @@ type Hook struct {
 	Appname  string
 	Hostname string
 
-	conn net.Conn
+	conn conn_int
 }
 
 // NewPapertrailHook creates a UDP hook to be added to an instance of logger.

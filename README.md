@@ -6,7 +6,7 @@ In most deployments, you'll want to send logs to Papertrail via their [remote_sy
 
 ## Usage
 
-You can find your Papertrail UDP port on your [Papertrail account page](https://papertrailapp.com/account/destinations). Substitute it below for `YOUR_PAPERTRAIL_UDP_PORT`.
+You can find your Papertrail port(Accepting TCP/TLS, UDP) on your [Papertrail account page](https://papertrailapp.com/account/destinations). Substitute it below for `YOUR_PAPERTRAIL_PORT`.
 
 For `YOUR_APP_NAME`, substitute a short string that will readily identify your application or service in the logs.
 
@@ -21,7 +21,7 @@ func main() {
   log       := logrus.New()
   hook, err := logrus_papertrail.NewPapertrailHook(&logrus_papertrail.Hook{
     Host: "logs.papertrailapp.com",
-    Port: YOUR_PAPERTRAIL_UDP_PORT,
+    Port: YOUR_PAPERTRAIL_PORT,
     Hostname: YOUR_HOST_NAME,
     Appname: YOUR_APP_NAME
   })

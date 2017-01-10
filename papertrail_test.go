@@ -22,10 +22,6 @@ func (t *test_connect) Write(b []byte) (int, error) {
 	return len(b), nil
 }
 
-func (t *test_connect) Show() []byte {
-	return t.buffer
-}
-
 func TestWritingToUDP(t *testing.T) {
 
 	udp.SetAddr(fmt.Sprintf(":%d", PORT))
@@ -55,8 +51,8 @@ func TestWritingToTCP_FAKE(t *testing.T) {
 	hook, err := NewPapertrailTCPHook(&Hook{
 		Host:     HOST,
 		Port:     PORT,
-		Hostname: "appserver",
-		Appname:  "myapp",
+		Hostname: "test.local",
+		Appname:  "test",
 	})
 
 	if err == nil {
@@ -71,12 +67,49 @@ func TestWritingToTCP_FAKE(t *testing.T) {
 
 	log.Infoln("testing TCP")
 
-	received := tconn.Show()
-
-	if len(received) > 0 {
-		t.Logf("%s", received)
+	if len(tconn.buffer) > 0 {
+		t.Logf("%s", tconn.buffer)
 	} else {
 		t.Error("Nothing was received!")
+	}
+
+}
+
+func TestLevels(t *testing.T) {
+
+	logrus.SetLevel(logrus.DebugLevel)
+
+	tconn := &test_connect{}
+
+	hook, _ := NewPapertrailTCPHook(&Hook{
+		Host:     HOST,
+		Port:     PORT,
+		Hostname: "test.local",
+		Appname:  "test",
+	})
+
+	hook.conn = tconn
+
+	hook.SetLevels([]logrus.Level{
+		logrus.ErrorLevel,
+		logrus.WarnLevel,
+	})
+
+	logrus.AddHook(hook)
+
+	logrus.Info("hidden string1")
+	logrus.Debug("hidden string2")
+
+	if len(tconn.buffer) > 0 {
+		t.Error("Error leveling (ignored levels pass)")
+	}
+
+	tconn.buffer = []byte{}
+
+	logrus.Warn("hidden string3")
+
+	if len(tconn.buffer) == 0 {
+		t.Error("Error leveling (specified levels did not pass)")
 	}
 
 }

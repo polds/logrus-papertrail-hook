@@ -2,22 +2,33 @@ package logrus_papertrail
 
 import (
 	"fmt"
-	"os"
-	"strconv"
 	"testing"
 
 	"github.com/Sirupsen/logrus"
-	"github.com/polds/logrus-papertrail-hook"
 	"github.com/stvp/go-udp-testing"
 )
 
-func TestWritingToUDP(t *testing.T) {
-	port := 16661
-	udp.SetAddr(fmt.Sprintf(":%d", port))
+const (
+	HOST = "localhost"
+	PORT = 16661
+)
 
-	hook, err := logrus_papertrail.NewPapertrailHook(&logrus_papertrail.Hook{
-		Host:     "localhost",
-		Port:     port,
+type test_connect struct {
+	buffer []byte
+}
+
+func (t *test_connect) Write(b []byte) (int, error) {
+	t.buffer = append(t.buffer, b...)
+	return len(b), nil
+}
+
+func TestWritingToUDP(t *testing.T) {
+
+	udp.SetAddr(fmt.Sprintf(":%d", PORT))
+
+	hook, err := NewPapertrailHook(&Hook{
+		Host:     HOST,
+		Port:     PORT,
 		Hostname: "test.local",
 		Appname:  "test",
 	})
@@ -33,40 +44,72 @@ func TestWritingToUDP(t *testing.T) {
 	})
 }
 
-func TestReal(t *testing.T) {
-	port, _ := strconv.Atoi(os.Getenv("PAPERTRAIL_PORT"))
+func TestWritingToTCP_FAKE(t *testing.T) {
 
-	hook, err := logrus_papertrail.NewPapertrailHook(&logrus_papertrail.Hook{
-		Host:     os.Getenv("PAPERTRAIL_HOST"),
-		Port:     port,
-		Hostname: "appserver",
-		Appname:  "myapp",
+	tconn := &test_connect{}
+
+	hook, err := NewPapertrailTCPHook(&Hook{
+		Host:     HOST,
+		Port:     PORT,
+		Hostname: "test.local",
+		Appname:  "test",
 	})
-	if err != nil {
-		t.Errorf("Unable to connect to Papertrail via UDP")
+
+	if err == nil {
+		t.Errorf("Fake connection! Must give error!")
 	}
 
-	log := logrus.New()
-	log.Hooks.Add(hook)
-
-	log.Infoln("testing UDP")
-}
-
-func TestRealTCP(t *testing.T) {
-	port, _ := strconv.Atoi(os.Getenv("PAPERTRAIL_PORT"))
-
-	hook, err := logrus_papertrail.NewPapertrailTCPHook(&logrus_papertrail.Hook{
-		Host:     os.Getenv("PAPERTRAIL_HOST"),
-		Port:     port,
-		Hostname: "appserver",
-		Appname:  "myapp",
-	})
-	if err != nil {
-		t.Errorf("Unable to connect to Papertrail via TCP")
-	}
+	// here i replace conn interface to check if everything is ok with hook
+	hook.conn = tconn
 
 	log := logrus.New()
 	log.Hooks.Add(hook)
 
 	log.Infoln("testing TCP")
+
+	if len(tconn.buffer) > 0 {
+		t.Logf("%s", tconn.buffer)
+	} else {
+		t.Error("Nothing was received!")
+	}
+
+}
+
+func TestLevels(t *testing.T) {
+
+	logrus.SetLevel(logrus.DebugLevel)
+
+	tconn := &test_connect{}
+
+	hook, _ := NewPapertrailTCPHook(&Hook{
+		Host:     HOST,
+		Port:     PORT,
+		Hostname: "test.local",
+		Appname:  "test",
+	})
+
+	hook.conn = tconn
+
+	hook.SetLevels([]logrus.Level{
+		logrus.ErrorLevel,
+		logrus.WarnLevel,
+	})
+
+	logrus.AddHook(hook)
+
+	logrus.Info("hidden string1")
+	logrus.Debug("hidden string2")
+
+	if len(tconn.buffer) > 0 {
+		t.Error("Error leveling (ignored levels pass)")
+	}
+
+	tconn.buffer = []byte{}
+
+	logrus.Warn("hidden string3")
+
+	if len(tconn.buffer) == 0 {
+		t.Error("Error leveling (specified levels did not pass)")
+	}
+
 }

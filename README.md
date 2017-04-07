@@ -13,7 +13,7 @@ For `YOUR_APP_NAME`, substitute a short string that will readily identify your a
 ```go
 import (
   "log/syslog"
-  "github.com/sirupsen/logrus"
+  "github.com/Sirupsen/logrus"
   "gopkg.in/polds/logrus-papertrail-hook.v2"
 )
 

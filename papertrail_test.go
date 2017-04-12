@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/Sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"github.com/stvp/go-udp-testing"
 )
 
@@ -106,7 +106,7 @@ func TestLevels(t *testing.T) {
 
 	tconn.buffer = []byte{}
 
-	logrus.Warn("hidden string3")
+	logrus.Warn("non hidden string3")
 
 	if len(tconn.buffer) == 0 {
 		t.Error("Error leveling (specified levels did not pass)")

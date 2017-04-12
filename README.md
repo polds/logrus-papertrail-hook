@@ -10,11 +10,17 @@ You can find your Papertrail port(Accepting TCP/TLS, UDP) on your [Papertrail ac
 
 For `YOUR_APP_NAME`, substitute a short string that will readily identify your application or service in the logs.
 
+### Note
+
+If you see case-sensitive problems you should read [this issue](https://github.com/sirupsen/logrus/issues/451) and [this](https://github.com/polds/logrus-papertrail-hook/issues/8)  
+We should fix this in future if real path of logrus repo will changed. For now you can use gopkg import: `gopkg.in/polds/logrus-papertrail-hook.v2`
+
+
 ```go
 import (
   "log/syslog"
   "github.com/sirupsen/logrus"
-  "gopkg.in/polds/logrus-papertrail-hook.v2"
+  "github.com/polds/logrus-papertrail-hook"
 )
 
 func main() {
@@ -37,3 +43,5 @@ func main() {
     - Unchanged from split from [logrus](https://github.com/Sirupsen/logrus)
 - [gopkg.in/polds/logrus-papertrail-hook.v2](https://godoc.org/gopkg.in/polds/logrus-papertrail-hook.v2)
     - Adds support for custom hostnames. Major API change.
+- [gopkg.in/polds/logrus-papertrail-hook.v3](https://godoc.org/gopkg.in/polds/logrus-papertrail-hook.v3)
+    - Major update implementing new features. May case case sensetive errors, for more info see [this issue](https://github.com/sirupsen/logrus/issues/451)

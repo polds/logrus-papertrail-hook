@@ -8,23 +8,17 @@ In most deployments, you'll want to send logs to Papertrail via their [remote_sy
 
 You can find your Papertrail port(Accepting TCP/TLS, UDP) on your [Papertrail account page](https://papertrailapp.com/account/destinations). Substitute it below for `YOUR_PAPERTRAIL_PORT`.
 
-For `YOUR_APP_NAME`, substitute a short string that will readily identify your application or service in the logs.
-
-### Note
-
-If you see case-sensitive problems you should read [this issue](https://github.com/sirupsen/logrus/issues/451) and [this](https://github.com/polds/logrus-papertrail-hook/issues/8)  
-We should fix this in future if real path of logrus repo will changed. For now you can use gopkg import: `gopkg.in/polds/logrus-papertrail-hook.v2`
-
+For `YOUR_APP_NAME` and `YOUR_HOST_NAME`, substitute a short strings that will readily identify your application and server in the logs.  
+If you leave `YOUR_HOST_NAME` empty, papertrail will replace it with your ip.
 
 ```go
 import (
-  "log/syslog"
-  "github.com/sirupsen/logrus"
+  log "github.com/Sirupsen/logrus"
   "github.com/polds/logrus-papertrail-hook"
 )
 
 func main() {
-  log       := logrus.New()
+
   hook, err := logrus_papertrail.NewPapertrailHook(&logrus_papertrail.Hook{
     Host: "logs.papertrailapp.com",
     Port: YOUR_PAPERTRAIL_PORT,
@@ -32,9 +26,14 @@ func main() {
     Appname: YOUR_APP_NAME
   })
 
+  hook.SetLevels([]log.Level{log.ErrorLevel, log.WarnLevel})
+
   if err == nil {
-    log.Hooks.Add(hook)
+    log.AddHook(hook)
   }
+
+  log.Warning("Here is you message")
+
 }
 ```
 
@@ -44,4 +43,4 @@ func main() {
 - [gopkg.in/polds/logrus-papertrail-hook.v2](https://godoc.org/gopkg.in/polds/logrus-papertrail-hook.v2)
     - Adds support for custom hostnames. Major API change.
 - [gopkg.in/polds/logrus-papertrail-hook.v3](https://godoc.org/gopkg.in/polds/logrus-papertrail-hook.v3)
-    - Major update implementing new features. May case case sensetive errors, for more info see [this issue](https://github.com/sirupsen/logrus/issues/451)
+    - Low case path. Read more [here](https://github.com/polds/logrus-papertrail-hook/issues/8) and [here](https://github.com/sirupsen/logrus/issues/451)

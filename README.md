@@ -8,8 +8,7 @@ In most deployments, you'll want to send logs to Papertrail via their [remote_sy
 
 You can find your Papertrail port(Accepting TCP/TLS, UDP) on your [Papertrail account page](https://papertrailapp.com/account/destinations). Substitute it below for `YOUR_PAPERTRAIL_PORT`.
 
-For `YOUR_APP_NAME` and `YOUR_HOST_NAME`, substitute a short strings that will readily identify your application and server in the logs.  
-If you leave `YOUR_HOST_NAME` empty, papertrail will replace it with your ip.
+For `YOUR_APP_NAME` and `YOUR_HOST_NAME`, substitute a short strings that will readily identify your application and server in the logs. If you leave `YOUR_HOST_NAME` empty, papertrail will replace it with your ip.
 
 ```go
 import (
@@ -36,6 +35,7 @@ func main() {
 
 }
 ```
+![2017-04-13-16 32 29-screenshot](https://cloud.githubusercontent.com/assets/4733217/25008215/bd996e52-206b-11e7-8268-af397524ea46.png)
 
 ## Changelog
 - [gopkg.in/polds/logrus-papertrail-hook.v1](https://godoc.org/gopkg.in/polds/logrus-papertrail-hook.v1)

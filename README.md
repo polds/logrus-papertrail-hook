@@ -12,7 +12,7 @@ For `YOUR_APP_NAME` and `YOUR_HOST_NAME`, substitute a short strings that will r
 
 ```go
 import (
-  log "github.com/Sirupsen/logrus"
+  log "github.com/sirupsen/logrus"
   "github.com/polds/logrus-papertrail-hook"
 )
 
@@ -39,7 +39,7 @@ func main() {
 
 ## Changelog
 - [gopkg.in/polds/logrus-papertrail-hook.v1](https://godoc.org/gopkg.in/polds/logrus-papertrail-hook.v1)
-    - Unchanged from split from [logrus](https://github.com/Sirupsen/logrus)
+    - Unchanged from split from [logrus](https://github.com/sirupsen/logrus)
 - [gopkg.in/polds/logrus-papertrail-hook.v2](https://godoc.org/gopkg.in/polds/logrus-papertrail-hook.v2)
     - Adds support for custom hostnames. Major API change.
 - [gopkg.in/polds/logrus-papertrail-hook.v3](https://godoc.org/gopkg.in/polds/logrus-papertrail-hook.v3)
